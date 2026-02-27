@@ -1,7 +1,17 @@
 import axios from 'axios';
 
+const getBaseUrl = () => {
+    let url = import.meta.env.VITE_API_URL;
+    if (url) {
+        // Ensure url doesn't end with slash before appending
+        url = url.replace(/\/$/, '');
+        return url.endsWith('/api') ? url : `${url}/api`;
+    }
+    return 'http://localhost:5000/api';
+};
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+    baseURL: getBaseUrl(),
 });
 
 // Add a request interceptor to inject the token
