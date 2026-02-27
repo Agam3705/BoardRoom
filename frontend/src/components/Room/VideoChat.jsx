@@ -8,7 +8,11 @@ const VideoElement = ({ peer }) => {
 
     useEffect(() => {
         peer.on('stream', stream => {
-            if (ref.current) ref.current.srcObject = stream;
+            if (ref.current) {
+                ref.current.srcObject = stream;
+                // Force play to bypass mobile/Chrome headless suspensions
+                ref.current.play().catch(e => console.warn("Autoplay prevented:", e));
+            }
         });
     }, [peer]);
 
@@ -187,19 +191,22 @@ const VideoChat = ({ roomId, isExpanded }) => {
 
     return (
         <div className={`flex flex-col h-full bg-gray-900 rounded-lg overflow-hidden transition-all duration-300 ${isExpanded ? 'p-2' : ''}`}>
-            <div className="flex-1 overflow-y-auto custom-scrollbar-dark grid grid-cols-1 gap-2 p-2">
+            <div className={`flex-1 overflow-y-auto custom-scrollbar-dark grid gap-2 p-2 ${peers.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                 {/* Local Video */}
-                <div className="relative group rounded-lg overflow-hidden bg-black aspect-video">
+                <div className="relative group rounded-lg overflow-hidden bg-black aspect-video flex-shrink-0">
                     <video playsInline muted autoPlay ref={userVideo} className="w-full h-full object-cover transform -scale-x-100" />
-                    <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-white text-xs backdrop-blur-sm">
+                    <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-white text-xs backdrop-blur-sm z-10">
                         You {audioMuted && <MicOff size={10} className="inline ml-1 text-red-400" />}
                     </div>
                 </div>
 
                 {/* Remote Videos */}
                 {peers.map((peerObj) => (
-                    <div key={peerObj.peerID} className="relative rounded-lg overflow-hidden bg-black aspect-video">
+                    <div key={peerObj.peerID} className="relative rounded-lg overflow-hidden bg-black aspect-video flex-shrink-0 border border-gray-700">
                         <VideoElement peer={peerObj.peer} />
+                        <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-white text-xs backdrop-blur-sm z-10">
+                            Partner
+                        </div>
                     </div>
                 ))}
             </div>
