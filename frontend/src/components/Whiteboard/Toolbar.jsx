@@ -216,7 +216,7 @@ const Toolbar = ({ handleClear, handleUndo, handleRedo, handleDownload, handleTi
 
             {/* Time Machine Slider Panel */}
             {isTimeMachineOpen && (
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-dark-surface px-8 py-5 rounded-3xl shadow-2xl border border-gray-100/50 dark:border-gray-800/80 backdrop-blur-md flex flex-col items-center w-[400px] animate-fade-in z-50">
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-dark-surface px-6 sm:px-8 py-4 sm:py-5 rounded-3xl shadow-2xl border border-gray-100/50 dark:border-gray-800/80 backdrop-blur-md flex flex-col items-center w-[90vw] sm:w-[400px] max-w-[400px] animate-fade-in z-50">
                     <div className="flex justify-between w-full mb-3">
                         <span className="text-sm font-semibold text-primary-600 dark:text-primary-400 flex items-center gap-2"><History size={16} /> Time Machine</span>
                         <span className="text-sm font-mono text-gray-500 dark:text-gray-400 font-bold bg-gray-100 dark:bg-dark-bg px-2 py-0.5 rounded-md">{historyStep} / {history.length - 1}</span>

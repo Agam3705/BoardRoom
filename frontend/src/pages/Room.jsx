@@ -276,29 +276,32 @@ const Room = () => {
                     {/* Copy Link */}
                     <button
                         onClick={copyRoomLink}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors border ${copySuccess ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors border ${copySuccess ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                        title="Share Room"
                     >
                         <LinkIcon size={16} />
-                        {copySuccess ? 'Copied!' : 'Share'}
+                        <span className="hidden sm:inline">{copySuccess ? 'Copied!' : 'Share'}</span>
                     </button>
 
                     {/* Save Board */}
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium shadow-sm border border-primary-700 hover:bg-primary-700 transition-colors disabled:opacity-75"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium shadow-sm border border-primary-700 hover:bg-primary-700 transition-colors disabled:opacity-75"
+                        title="Save Forcefully"
                     >
                         <Save size={16} />
-                        {saving ? 'Saving...' : 'Save'}
+                        <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
                     </button>
 
                     {/* Toggle Notes */}
                     <button
                         onClick={() => setIsNotesOpen(!isNotesOpen)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors border ${isNotesOpen ? 'bg-primary-100 text-primary-800 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors border ${isNotesOpen ? 'bg-primary-100 text-primary-800 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                        title="Personal Notes"
                     >
                         <Edit3 size={16} />
-                        Notes
+                        <span className="hidden sm:inline">Notes</span>
                     </button>
 
                     {/* Toggle Reactions */}
@@ -337,11 +340,11 @@ const Room = () => {
                     {/* Toggle Video/Audio */}
                     <button
                         onClick={() => setIsVideoOpen(!isVideoOpen)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors border ${isVideoOpen ? 'bg-primary-100 text-primary-800 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors border ${isVideoOpen ? 'bg-primary-100 text-primary-800 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
                         title="Join Call"
                     >
                         <Video size={16} />
-                        Call
+                        <span className="hidden sm:inline">Call</span>
                     </button>
 
                     <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1"></div>
@@ -392,8 +395,8 @@ const Room = () => {
             <div className="flex-1 flex flex-row overflow-hidden relative">
 
                 {/* Left Sidebar Toolbar (Proper Side bar) */}
-                <div className="h-full flex flex-col justify-center z-40 ml-4 pointer-events-none absolute left-0">
-                    <aside className="w-[100px] max-h-[90vh] bg-white dark:bg-dark-surface rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col items-center py-2 shrink-0 shadow-xl relative pointer-events-auto overflow-y-auto custom-scrollbar">
+                <div className="h-full flex flex-col justify-center z-40 ml-2 sm:ml-4 pointer-events-none absolute left-0">
+                    <aside className="w-[70px] sm:w-[100px] max-h-[90vh] bg-white dark:bg-dark-surface rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col items-center py-2 shrink-0 shadow-xl relative pointer-events-auto overflow-y-auto custom-scrollbar-dark custom-scrollbar">
                         <Toolbar
                             handleClear={handleClear}
                             handleUndo={handleUndo}
@@ -431,17 +434,17 @@ const Room = () => {
 
                 {/* Right Panel Layout (Chat / Notes) */}
                 <aside
-                    className={`bg-white dark:bg-dark-surface z-40 shrink-0 shadow-[-4px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-200 dark:border-gray-800 flex flex-col relative h-full transition-all duration-300 ${isChatOpen || isNotesOpen ? 'w-80' : 'w-0 border-none opacity-0'}`}
+                    className={`bg-white dark:bg-dark-surface z-50 shadow-[-4px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-200 dark:border-gray-800 flex flex-col absolute sm:relative right-0 h-full transition-all duration-300 ${isChatOpen || isNotesOpen ? 'w-full sm:w-80' : 'w-0 border-none opacity-0'}`}
                 >
-                    <div className={`w-80 h-full absolute right-0 top-0 flex flex-col bg-white dark:bg-dark-surface ${isChatOpen ? 'z-20' : 'z-0 invisible'}`}>
+                    <div className={`w-full sm:w-80 h-full absolute right-0 top-0 flex flex-col bg-white dark:bg-dark-surface ${isChatOpen ? 'z-20' : 'z-0 invisible'}`}>
                         <ChatPanel roomId={roomId} isOpen={isChatOpen} toggleChat={() => setIsChatOpen(false)} />
                     </div>
-                    <div className={`w-80 h-full absolute right-0 top-0 flex flex-col bg-white dark:bg-dark-surface ${isNotesOpen && !isChatOpen ? 'z-20' : 'z-0 invisible'}`}>
+                    <div className={`w-full sm:w-80 h-full absolute right-0 top-0 flex flex-col bg-white dark:bg-dark-surface ${isNotesOpen && !isChatOpen ? 'z-20' : 'z-0 invisible'}`}>
                         <PersonalNotes isOpen={isNotesOpen} onClose={() => setIsNotesOpen(false)} roomId={roomId} />
                     </div>
                 </aside>
             </div>
-        </div >
+        </div>
     );
 };
 

@@ -26,9 +26,9 @@ const ParticipantList = ({ participants }) => {
                     <span>{participants.length}</span>
                 </div>
 
-                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1 hidden sm:block"></div>
 
-                <div className="flex -space-x-1 items-center">
+                <div className="hidden sm:flex -space-x-1 items-center">
                     {participants.slice(0, 3).map((p, i) => (
                         <div
                             key={i}
@@ -43,8 +43,8 @@ const ParticipantList = ({ participants }) => {
                             +{participants.length - 3}
                         </div>
                     )}
-                    <ChevronDown size={14} className={`ml-2 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
+                <ChevronDown size={14} className={`ml-0 sm:ml-2 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
