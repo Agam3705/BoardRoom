@@ -16,7 +16,7 @@ const roomSchema = new mongoose.Schema({
         required: true
     },
     whiteboardData: {
-        type: Array, // Array of stroke data objects
+        type: [mongoose.Schema.Types.Mixed], // Mixed type bypasses strict casting allowing nested arrays (like Table cells)
         default: []
     },
     privacyState: {

@@ -579,8 +579,8 @@ const Canvas = ({ roomId }) => {
                             delete tableGroupProps.strokeWidth;
                             return (
                                 <Group key={`sh-${el.id || i}`} name="table-group" {...tableGroupProps}>
-                                    {Array.from({ length: el.rows }).map((_, r) => (
-                                        Array.from({ length: el.cols }).map((_, c) => (
+                                    {Array.from({ length: Math.max(1, parseInt(el.rows, 10) || 1) }).map((_, r) => (
+                                        Array.from({ length: Math.max(1, parseInt(el.cols, 10) || 1) }).map((_, c) => (
                                             <Group key={`cell-${r}-${c}`} x={c * el.cellWidth} y={r * el.cellHeight}>
                                                 <Rect width={el.cellWidth} height={el.cellHeight} stroke={displayColor} strokeWidth={el.brushSize || 2} fill={el.fillColor || (theme === 'dark' ? '#1f2937' : '#ffffff')} />
                                                 <Text
