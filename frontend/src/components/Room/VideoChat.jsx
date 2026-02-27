@@ -36,10 +36,26 @@ const VideoChat = ({ roomId, isExpanded }) => {
 
     useEffect(() => {
         let currentStream;
+        let isMounted = true;
+        const socketObj = socketRef.current;
+
+        const STUN_CONFIG = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:global.stun.twilio.com:3478' }
+            ]
+        };
+
+        let handlers = {};
 
         const initMedia = async () => {
             try {
                 const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                if (!isMounted) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    return;
+                }
+
                 setStream(mediaStream);
                 currentStream = mediaStream;
 
@@ -47,42 +63,51 @@ const VideoChat = ({ roomId, isExpanded }) => {
                     userVideo.current.srcObject = mediaStream;
                 }
 
-                const socketObj = socketRef.current;
-                socketObj.emit('join_video', roomId);
-
-                socketObj.on('all_video_users', (users) => {
+                handlers.handleAllVideoUsers = (users) => {
                     const peers = [];
+                    peersRef.current.forEach(p => p.peer.destroy());
+                    peersRef.current = [];
+
                     users.forEach(userID => {
-                        const peer = createPeer(userID, socketObj.id, mediaStream);
+                        const peer = createPeer(userID, socketObj.id, mediaStream, STUN_CONFIG);
                         peersRef.current.push({ peerID: userID, peer });
                         peers.push({ peerID: userID, peer });
                     });
                     setPeers(peers);
-                });
+                };
 
-                socketObj.on('user_joined_video', payload => {
-                    const peer = addPeer(payload.signal, payload.callerID, mediaStream);
+                handlers.handleUserJoined = payload => {
+                    const existing = peersRef.current.find(p => p.peerID === payload.callerID);
+                    if (existing) return;
+
+                    const peer = addPeer(payload.signal, payload.callerID, mediaStream, STUN_CONFIG);
                     peersRef.current.push({ peerID: payload.callerID, peer });
-
                     setPeers(users => [...users, { peerID: payload.callerID, peer }]);
-                });
+                };
 
-                socketObj.on('receiving_returned_signal', payload => {
+                handlers.handleReceivingReturnedSignal = payload => {
                     const item = peersRef.current.find(p => p.peerID === payload.id);
                     if (item) {
                         item.peer.signal(payload.signal);
                     }
-                });
+                };
 
-                socketObj.on('user_left_video', (id) => {
+                handlers.handleUserLeft = (id) => {
                     const peerObj = peersRef.current.find(p => p.peerID === id);
                     if (peerObj) peerObj.peer.destroy();
                     peersRef.current = peersRef.current.filter(p => p.peerID !== id);
                     setPeers(users => users.filter(p => p.peerID !== id));
-                });
+                };
+
+                socketObj.on('all_video_users', handlers.handleAllVideoUsers);
+                socketObj.on('user_joined_video', handlers.handleUserJoined);
+                socketObj.on('receiving_returned_signal', handlers.handleReceivingReturnedSignal);
+                socketObj.on('user_left_video', handlers.handleUserLeft);
+
+                socketObj.emit('join_video', roomId);
             } catch (err) {
                 console.error("Failed to get local media", err);
-                setMediaError(true);
+                if (isMounted) setMediaError(true);
             }
         };
 
@@ -90,26 +115,32 @@ const VideoChat = ({ roomId, isExpanded }) => {
             initMedia();
         }
 
-        const socketObj = socketRef.current;
-
         return () => {
-            // Cleanup logic
+            isMounted = false;
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
             peersRef.current.forEach(p => p.peer.destroy());
-            socketObj.off('all_video_users');
-            socketObj.off('user_joined_video');
-            socketObj.off('receiving_returned_signal');
-            socketObj.off('user_left_video');
+            peersRef.current = [];
+
+            if (handlers.handleAllVideoUsers) {
+                socketObj.off('all_video_users', handlers.handleAllVideoUsers);
+                socketObj.off('user_joined_video', handlers.handleUserJoined);
+                socketObj.off('receiving_returned_signal', handlers.handleReceivingReturnedSignal);
+                socketObj.off('user_left_video', handlers.handleUserLeft);
+            }
+
+            socketObj.emit('leave_video', roomId);
+            setPeers([]);
         };
     }, [roomId]);
 
-    function createPeer(userToSignal, callerID, stream) {
+    function createPeer(userToSignal, callerID, stream, config) {
         const peer = new Peer({
             initiator: true,
             trickle: false,
             stream,
+            config
         });
 
         peer.on('signal', signal => {
@@ -119,11 +150,12 @@ const VideoChat = ({ roomId, isExpanded }) => {
         return peer;
     }
 
-    function addPeer(incomingSignal, callerID, stream) {
+    function addPeer(incomingSignal, callerID, stream, config) {
         const peer = new Peer({
             initiator: false,
             trickle: false,
             stream,
+            config
         });
 
         peer.on('signal', signal => {

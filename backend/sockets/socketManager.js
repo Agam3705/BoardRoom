@@ -118,6 +118,10 @@ module.exports = (io) => {
             io.to(payload.callerID).emit('receiving_returned_signal', { signal: payload.signal, id: socket.id });
         });
 
+        socket.on('leave_video', (roomId) => {
+            socket.to(roomId).emit('user_left_video', socket.id);
+        });
+
         socket.on('disconnect', () => {
             console.log(`User disconnected: ${socket.id}`);
             const roomId = socket.roomId;
